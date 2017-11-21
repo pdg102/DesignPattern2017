@@ -28,8 +28,9 @@ import com.holub.life.Resident;
 
 public class Universe extends JPanel
 {	private Cell  	outermostCell;
-	private static	final Universe 	theInstance = new Universe();
 
+	//삭제
+	//private static	final Universe 	theInstance = new Universe();
 	/** The default height and width of a Neighborhood in cells.
 	 *  If it's too big, you'll run too slowly because
 	 *  you have to update the entire block as a unit, so there's more
@@ -47,159 +48,146 @@ public class Universe extends JPanel
 	// The constructor is private so that the universe can be created
 	// only by an outer-class method [Neighborhood.createUniverse()].
 
-	private Universe()
-	{	// Create the nested Cells that comprise the "universe." A bug
-		// in the current implementation causes the program to fail
-		// miserably if the overall size of the grid is too big to fit
-		// on the screen.
-		
-		outermostCell = new Neighborhood
-						(	DEFAULT_GRID_SIZE,
-							new Neighborhood
+	//public으로 변경!
+		public Universe()
+		{	// Create the nested Cells that comprise the "universe." A bug
+			// in the current implementation causes the program to fail
+			// miserably if the overall size of the grid is too big to fit
+			// on the screen.
+
+			outermostCell = new Neighborhood
 							(	DEFAULT_GRID_SIZE,
-								new Rule1()
-							)
-						);
-
-		final Dimension PREFERRED_SIZE =
-						new Dimension
-						(  outermostCell.widthInCells() * DEFAULT_CELL_SIZE,
-						   outermostCell.widthInCells() * DEFAULT_CELL_SIZE
-						);
-
-		addComponentListener
-		(	new ComponentAdapter()
-			{	public void componentResized(ComponentEvent e)
-				{
-					// Make sure that the cells fit evenly into the
-					// total grid size so that each cell will be the
-					// same size. For example, in a 64x64 grid, the
-					// total size must be an even multiple of 63.
-
-					Rectangle bounds = getBounds();
-					bounds.height /= outermostCell.widthInCells();
-					bounds.height *= outermostCell.widthInCells();
-					bounds.width  =  bounds.height;
-					setBounds( bounds );
-				}
-			}
-		);
-
-		setBackground	( Color.white	 );
-		setPreferredSize( PREFERRED_SIZE );
-		setMaximumSize	( PREFERRED_SIZE );
-		setMinimumSize	( PREFERRED_SIZE );
-		setOpaque		( true			 );
-
-		addMouseListener					//{=Universe.mouse}
-		(	new MouseAdapter()
-			{	public void mousePressed(MouseEvent e)
-				{	Rectangle bounds = getBounds();
-					bounds.x = 0;
-					bounds.y = 0;
-					outermostCell.userClicked(e.getPoint(),bounds);
-					repaint();
-				}
-			}
-		);
-
-		MenuSite.addLine( this, "Grid", "Clear",
-			new ActionListener()
-			{	public void actionPerformed(ActionEvent e)
-				{	outermostCell.clear();
-					repaint();
-				}
-			}
-		);
-
-		MenuSite.addLine			// {=Universe.load.setup}
-		(	this, "Grid", "Load",
-			new ActionListener()
-			{	public void actionPerformed(ActionEvent e)
-				{	doLoad();
-				}
-			}
-		);
-
-		MenuSite.addLine
-		(	this, "Grid", "Store",
-			new ActionListener()
-			{	public void actionPerformed(ActionEvent e)
-				{	doStore();
-				}
-			}
-		);
-
-		MenuSite.addLine
-		(	this, "Grid", "Exit",
-			new ActionListener()
-			{	public void actionPerformed(ActionEvent e)
-		        {	System.exit(0);
-		        }
-			}
-		);
-		
-		MenuSite.addLine
-		(	this, "Rule", "Rule1",
-			new ActionListener()
-			{	public void actionPerformed(ActionEvent e)
-		        {
-				outermostCell.clear();
-				repaint();
-				
-		        outermostCell = new Neighborhood
-							(	DEFAULT_GRID_SIZE,
-									new Neighborhood
-									(	DEFAULT_GRID_SIZE,
-											new Rule1()
-											)
-									);
-		        }
-			}
-		);
-		
-		MenuSite.addLine
-		(	this, "Rule", "Rule2",
-			new ActionListener()
-			{	public void actionPerformed(ActionEvent e)
-		        {
-				outermostCell.clear();
-				repaint();
-				
-		        outermostCell = new Neighborhood
-							(	DEFAULT_GRID_SIZE,
-									new Neighborhood
+								new Neighborhood
 								(	DEFAULT_GRID_SIZE,
-										new Rule2()
-										)
-									);
-		        }
-			}
-		);
+									new Resident()
+								)
+							);
 
-		Clock.instance().addClockListener //{=Universe.clock.subscribe}
-		(	new Clock.Listener()
-			{	public void tick()
-				{	if( outermostCell.figureNextState
-						   ( Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,
-							 Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,Cell.DUMMY
-						   )
-					  )
-					{	if( outermostCell.transition() )
-							refreshNow();
+			final Dimension PREFERRED_SIZE =
+							new Dimension
+							(  outermostCell.widthInCells() * DEFAULT_CELL_SIZE,
+							   outermostCell.widthInCells() * DEFAULT_CELL_SIZE
+							);
+			setSettings();
+			
+		}
+		
+		public Universe(int gridSize, int cellSize){
+			outermostCell = new Neighborhood
+					(	gridSize,
+						new Neighborhood
+						(	gridSize,
+							new Resident()
+						)
+					);
+
+			final Dimension PREFERRED_SIZE =
+					new Dimension
+					(  outermostCell.widthInCells() * cellSize,
+					   outermostCell.widthInCells() * cellSize
+					);
+			setSettings();
+		}
+		
+		private void setSettings(){
+			addComponentListener
+			(	new ComponentAdapter()
+				{	public void componentResized(ComponentEvent e)
+					{
+						// Make sure that the cells fit evenly into the
+						// total grid size so that each cell will be the
+						// same size. For example, in a 64x64 grid, the
+						// total size must be an even multiple of 63.
+
+						Rectangle bounds = getBounds();
+						bounds.height /= outermostCell.widthInCells();
+						bounds.height *= outermostCell.widthInCells();
+						bounds.width  =  bounds.height;
+						setBounds( bounds );
 					}
 				}
-			}
-		);
-	}
+			);
+
+			setBackground	( Color.white	 );
+			setPreferredSize( PREFERRED_SIZE );
+			setMaximumSize	( PREFERRED_SIZE );
+			setMinimumSize	( PREFERRED_SIZE );
+			setOpaque		( true			 );
+
+			addMouseListener					//{=Universe.mouse}
+			(	new MouseAdapter()
+				{	public void mousePressed(MouseEvent e)
+					{	Rectangle bounds = getBounds();
+						bounds.x = 0;
+						bounds.y = 0;
+						outermostCell.userClicked(e.getPoint(),bounds);
+						repaint();
+					}
+				}
+			);
+
+			MenuSite.addLine( this, "Grid", "Clear",
+				new ActionListener()
+				{	public void actionPerformed(ActionEvent e)
+					{	outermostCell.clear();
+						repaint();
+					}
+				}
+			);
+
+			MenuSite.addLine			// {=Universe.load.setup}
+			(	this, "Grid", "Load",
+				new ActionListener()
+				{	public void actionPerformed(ActionEvent e)
+					{	doLoad();
+					}
+				}
+			);
+
+			MenuSite.addLine
+			(	this, "Grid", "Store",
+				new ActionListener()
+				{	public void actionPerformed(ActionEvent e)
+					{	doStore();
+					}
+				}
+			);
+
+			MenuSite.addLine
+			(	this, "Grid", "Exit",
+				new ActionListener()
+				{	public void actionPerformed(ActionEvent e)
+			        {	System.exit(0);
+			        }
+				}
+			);
+
+			Clock.instance().addClockListener //{=Universe.clock.subscribe}
+			(	new Clock.Listener()
+				{	public void tick()
+					{	if( outermostCell.figureNextState
+							   ( Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,
+								 Cell.DUMMY,Cell.DUMMY,Cell.DUMMY,Cell.DUMMY
+							   )
+						  )
+						{	if( outermostCell.transition() )
+								refreshNow();
+						}
+					}
+				}
+			);
+		}
+
 
 	/** Singleton Accessor. The Universe object itself is manufactured
 	 *  in Neighborhood.createUniverse()
 	 */
 
-	public static Universe instance()
-	{	return theInstance;
-	}
+		//삭제
+		/*public static Universe instance()
+		{	return theInstance;
+		}*/
+
 
 	private void doLoad()
 	{	try
