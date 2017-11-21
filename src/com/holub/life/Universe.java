@@ -27,7 +27,7 @@ import com.holub.life.Resident;
  */
 
 public class Universe extends JPanel
-{	private 		final Cell  	outermostCell;
+{	private Cell  	outermostCell;
 	private static	final Universe 	theInstance = new Universe();
 
 	/** The default height and width of a Neighborhood in cells.
@@ -52,12 +52,12 @@ public class Universe extends JPanel
 		// in the current implementation causes the program to fail
 		// miserably if the overall size of the grid is too big to fit
 		// on the screen.
-
+		
 		outermostCell = new Neighborhood
 						(	DEFAULT_GRID_SIZE,
 							new Neighborhood
 							(	DEFAULT_GRID_SIZE,
-								new Resident()
+								new Rule1()
 							)
 						);
 
@@ -135,6 +135,44 @@ public class Universe extends JPanel
 			new ActionListener()
 			{	public void actionPerformed(ActionEvent e)
 		        {	System.exit(0);
+		        }
+			}
+		);
+		
+		MenuSite.addLine
+		(	this, "Rule", "Rule1",
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+		        {
+				outermostCell.clear();
+				repaint();
+				
+		        outermostCell = new Neighborhood
+							(	DEFAULT_GRID_SIZE,
+									new Neighborhood
+									(	DEFAULT_GRID_SIZE,
+											new Rule1()
+											)
+									);
+		        }
+			}
+		);
+		
+		MenuSite.addLine
+		(	this, "Rule", "Rule2",
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+		        {
+				outermostCell.clear();
+				repaint();
+				
+		        outermostCell = new Neighborhood
+							(	DEFAULT_GRID_SIZE,
+									new Neighborhood
+								(	DEFAULT_GRID_SIZE,
+										new Rule2()
+										)
+									);
 		        }
 			}
 		);
