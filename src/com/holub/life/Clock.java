@@ -6,8 +6,6 @@ import javax.swing.*;
 import java.util.*;
 import java.util.Timer;		// overrides java.awt.timer
 import com.holub.ui.MenuSite;
-import com.holub.life.event_listener.TickEvent;
-import com.holub.life.event_listener.TickingEvent;
 import com.holub.tools.Publisher;
 
 /***
@@ -36,21 +34,23 @@ public class Clock
 	// it creates a menu, and it can't do that until the menus
 	// are established.
 	//
-	private Clock()
+	Clock()
 	{	createMenus();
 	}
 
-	private static Clock instance;
+	//private static Clock instance;
 
 	/** The clock is a singleton. Get a reference to it by calling
 	 *  <code>Clock.instance()</code>. It's illegal to call
 	 *  <code>new Clock()</code>.
 	 */
+	/*
 	public synchronized static Clock instance()
 	{	if( instance == null )
 			instance = new Clock();
 		return instance;
 	}
+	*/
 
 	/** Start up the clock.
 	 *  @param millisecondsBetweenTicks The number of milliseconds between
@@ -86,13 +86,30 @@ public class Clock
 	{
 		// First set up a single listener that will handle all the
 		// menu-selection events except "Exit"
+
+		ActionListener modifier =									//{=startSetup}
+			new ActionListener()
+			{	public void actionPerformed(ActionEvent e)
+				{
+					String name = ((JMenuItem)e.getSource()).getName();
+					char toDo = name.charAt(0);
+
+					if( toDo=='T' )
+						tick();				      // single tick
+					else
+						startTicking(   toDo=='A' ? 500:	  // agonizing
+										toDo=='S' ? 150:	  // slow
+										toDo=='M' ? 70 :	  // medium
+										toDo=='F' ? 30 : 0 ); // fast
+				}
+			};
 																	// {=midSetup}
-		MenuSite.addLine(this,"Go","Halt",  			new TickingEvent(this,0));
-		MenuSite.addLine(this,"Go","Tick (Single Step)",new TickEvent(this));
-		MenuSite.addLine(this,"Go","Agonizing",	 	  	new TickingEvent(this,500));
-		MenuSite.addLine(this,"Go","Slow",		 		new TickingEvent(this,150));
-		MenuSite.addLine(this,"Go","Medium",	 	 	new TickingEvent(this,70));
-		MenuSite.addLine(this,"Go","Fast",				new TickingEvent(this,30)); // {=endSetup}
+		MenuSite.addLine(this,"Go","Halt",  			modifier);
+		MenuSite.addLine(this,"Go","Tick (Single Step)",modifier);
+		MenuSite.addLine(this,"Go","Agonizing",	 	  	modifier);
+		MenuSite.addLine(this,"Go","Slow",		 		modifier);
+		MenuSite.addLine(this,"Go","Medium",	 	 	modifier);
+		MenuSite.addLine(this,"Go","Fast",				modifier); // {=endSetup}
 	}	//{=endCreateMenus}
 
 	private Publisher publisher = new Publisher();

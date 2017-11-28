@@ -17,29 +17,52 @@ import com.holub.life.Universe;
  * @include /etc/license.txt
  */
 
-public abstract class Resident implements Cell
+public final class Resident implements Cell
 {
 	private static final Color BORDER_COLOR = Colors.DARK_YELLOW;
 	private static final Color LIVE_COLOR 	= Color.RED;
 	private static final Color DEAD_COLOR   = Colors.LIGHT_YELLOW;
 
-	protected boolean amAlive 	= false;
-	protected boolean willBeAlive	= false;
+	private boolean amAlive 	= false;
+	private boolean willBeAlive	= false;
 
-	protected boolean isStable(){return amAlive == willBeAlive; }
+	private boolean isStable(){return amAlive == willBeAlive; }
 
 	/** figure the next state.
 	 *  @return true if the cell is not stable (will change state on the
 	 *  next transition().
 	 */
-	
-	public abstract boolean figureNextState(
-			Cell north, 	Cell south,
-			Cell east, 		Cell west,
-			Cell northeast, Cell northwest,
-			Cell southeast, Cell southwest );
-	
-	protected void verify( Cell c, String direction )
+	public boolean figureNextState(
+							Cell north, 	Cell south,
+							Cell east, 		Cell west,
+							Cell northeast, Cell northwest,
+							Cell southeast, Cell southwest )
+	{
+		verify( north, 		"north"		);
+		verify( south, 		"south"		);
+		verify( east, 		"east"		);
+		verify( west, 		"west"		);
+		verify( northeast,	"northeast"	);
+		verify( northwest,	"northwest" );
+		verify( southeast,	"southeast" );
+		verify( southwest,	"southwest" );
+
+		int neighbors = 0;
+
+		if( north.	  isAlive()) ++neighbors;
+		if( south.	  isAlive()) ++neighbors;
+		if( east. 	  isAlive()) ++neighbors;
+		if( west. 	  isAlive()) ++neighbors;
+		if( northeast.isAlive()) ++neighbors;
+		if( northwest.isAlive()) ++neighbors;
+		if( southeast.isAlive()) ++neighbors;
+		if( southwest.isAlive()) ++neighbors;
+
+		willBeAlive = (neighbors==3 || (amAlive && neighbors==2));
+		return !isStable();
+	}
+
+	private void verify( Cell c, String direction )
 	{	assert (c instanceof Resident) || (c == Cell.DUMMY)
 				: "incorrect type for " + direction +  ": " +
 				   c.getClass().getName();
@@ -81,7 +104,7 @@ public abstract class Resident implements Cell
 
 	public void	   clear()			{amAlive = willBeAlive = false; }
 	public boolean isAlive()		{return amAlive;			    }
-	public abstract Cell    create();
+	public Cell    create()			{return new Resident();			}
 	public int 	   widthInCells()	{return 1;}
 
 	public Direction isDisruptiveTo()
