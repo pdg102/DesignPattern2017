@@ -29,7 +29,7 @@ import com.holub.life.Resident;
 public class Universe extends JPanel
 {	private Cell  	outermostCell;
 
-	//삭제
+	//delete
 	//private static	final Universe 	theInstance = new Universe();
 	/** The default height and width of a Neighborhood in cells.
 	 *  If it's too big, you'll run too slowly because
@@ -48,7 +48,7 @@ public class Universe extends JPanel
 	// The constructor is private so that the universe can be created
 	// only by an outer-class method [Neighborhood.createUniverse()].
 
-	//public으로 변경!
+	//change to public
 		public Universe()
 		{	// Create the nested Cells that comprise the "universe." A bug
 			// in the current implementation causes the program to fail
@@ -59,7 +59,7 @@ public class Universe extends JPanel
 							(	DEFAULT_GRID_SIZE,
 								new Neighborhood
 								(	DEFAULT_GRID_SIZE,
-									new Resident()
+									new Rule1()
 								)
 							);
 
@@ -68,7 +68,7 @@ public class Universe extends JPanel
 							(  outermostCell.widthInCells() * DEFAULT_CELL_SIZE,
 							   outermostCell.widthInCells() * DEFAULT_CELL_SIZE
 							);
-			setSettings();
+			setSettings(PREFERRED_SIZE);
 			
 		}
 		
@@ -77,7 +77,7 @@ public class Universe extends JPanel
 					(	gridSize,
 						new Neighborhood
 						(	gridSize,
-							new Resident()
+							new Rule1()
 						)
 					);
 
@@ -86,10 +86,10 @@ public class Universe extends JPanel
 					(  outermostCell.widthInCells() * cellSize,
 					   outermostCell.widthInCells() * cellSize
 					);
-			setSettings();
+			setSettings(PREFERRED_SIZE);
 		}
 		
-		private void setSettings(){
+		private void setSettings(Dimension PREFERRED_SIZE){
 			addComponentListener
 			(	new ComponentAdapter()
 				{	public void componentResized(ComponentEvent e)
@@ -161,6 +161,44 @@ public class Universe extends JPanel
 			        }
 				}
 			);
+			
+			MenuSite.addLine
+			(	this, "Rule", "Rule1",
+				new ActionListener()
+				{	public void actionPerformed(ActionEvent e)
+			        {
+					outermostCell.clear();
+					repaint();
+					
+			        outermostCell = new Neighborhood
+								(	DEFAULT_GRID_SIZE,
+										new Neighborhood
+										(	DEFAULT_GRID_SIZE,
+												new Rule1()
+												)
+										);
+			        }
+				}
+			);
+			
+			MenuSite.addLine
+			(	this, "Rule", "Rule2",
+				new ActionListener()
+				{	public void actionPerformed(ActionEvent e)
+			        {
+					outermostCell.clear();
+					repaint();
+					
+			        outermostCell = new Neighborhood
+								(	DEFAULT_GRID_SIZE,
+										new Neighborhood
+									(	DEFAULT_GRID_SIZE,
+											new Rule2()
+											)
+										);
+			        }
+				}
+			);
 
 			Clock.instance().addClockListener //{=Universe.clock.subscribe}
 			(	new Clock.Listener()
@@ -183,7 +221,7 @@ public class Universe extends JPanel
 	 *  in Neighborhood.createUniverse()
 	 */
 
-		//삭제
+		//delete
 		/*public static Universe instance()
 		{	return theInstance;
 		}*/
