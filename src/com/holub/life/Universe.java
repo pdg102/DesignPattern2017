@@ -28,6 +28,7 @@ import com.holub.life.Resident;
 
 public class Universe extends JPanel
 {	private Cell  	outermostCell;
+	private static final Clock clock = new Clock();
 
 	//delete
 	//private static	final Universe 	theInstance = new Universe();
@@ -200,7 +201,7 @@ public class Universe extends JPanel
 				}
 			);
 
-			Clock.instance().addClockListener //{=Universe.clock.subscribe}
+			clock.addClockListener //{=Universe.clock.subscribe}
 			(	new Clock.Listener()
 				{	public void tick()
 					{	if( outermostCell.figureNextState
@@ -233,7 +234,7 @@ public class Universe extends JPanel
 			FileInputStream in = new FileInputStream(
 			   Files.userSelected(".",".life","Life File","Load"));
 
-			Clock.instance().stop();		// stop the game and
+			clock.stop();		// stop the game and
 			outermostCell.clear();			// clear the board.
 
 			Storable memento = outermostCell.createMemento();
@@ -255,7 +256,7 @@ public class Universe extends JPanel
 			FileOutputStream out = new FileOutputStream(
 				  Files.userSelected(".",".life","Life File","Write"));
 
-			Clock.instance().stop();		// stop the game
+			clock.stop();		// stop the game
 
 			Storable memento = outermostCell.createMemento();
 			outermostCell.transfer( memento, new Point(0,0), Cell.STORE );
