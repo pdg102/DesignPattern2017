@@ -8,6 +8,7 @@ import java.util.Timer;		// overrides java.awt.timer
 import com.holub.ui.MenuSite;
 import com.holub.life.event_listener.TickEvent;
 import com.holub.life.event_listener.TickingEvent;
+import com.holub.tools.Distributor;
 import com.holub.tools.Publisher;
 
 /***
@@ -118,7 +119,7 @@ public class Clock
 	 */
 	public void tick()
 	{	publisher.publish
-		(	new Publisher.Distributor()
+		(	new Distributor()
 			{	public void deliverTo( Object subscriber )
 				{	if( !menuIsActive() )
 						((Listener)subscriber).tick();
